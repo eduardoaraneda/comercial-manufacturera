@@ -1,0 +1,23 @@
+-- Tabla: Cliente. Ejecutar despues de los archivos anteriores.
+SET ANSI_NULLS ON;
+SET QUOTED_IDENTIFIER ON;
+SET ANSI_PADDING ON;
+SET ANSI_WARNINGS ON;
+SET ARITHABORT ON;
+SET CONCAT_NULL_YIELDS_NULL ON;
+SET NUMERIC_ROUNDABORT OFF;
+GO
+CREATE TABLE Cliente (
+    ClienteId INT IDENTITY(1,1) NOT NULL,
+    IdentificadorFiscal NVARCHAR(30) NULL,
+    NombreRazonSocial NVARCHAR(200) NOT NULL,
+    Email NVARCHAR(254) NULL,
+    Telefono NVARCHAR(30) NULL,
+    Direccion NVARCHAR(300) NULL,
+    Activo BIT NOT NULL CONSTRAINT DF_Cliente_Activo DEFAULT (1),
+    CreadoEn DATETIME2(3) NOT NULL CONSTRAINT DF_Cliente_CreadoEn DEFAULT (SYSUTCDATETIME()),
+    Version ROWVERSION NOT NULL,
+    CONSTRAINT PK_Cliente PRIMARY KEY (ClienteId),
+    CONSTRAINT CK_Cliente_Nombre CHECK (LEN(LTRIM(RTRIM(NombreRazonSocial))) > 0)
+);
+GO

@@ -1,0 +1,21 @@
+@model ReportesViewModel
+@{ ViewData["Title"] = "Reportes"; var canSell = User.IsInRole("Administrador") || User.IsInRole("Vendedor"); var cl=CultureInfo.GetCultureInfo("es-CL"); }
+<div class="page-heading"><div><p class="eyebrow">CONTROL DE LA OPERACIÓN</p><h1>Reportes</h1><p class="muted">Ventas y movimientos por período y bodega. Fechas en UTC.</p></div></div>
+<section class="panel mb-6"><form method="get" class="filter-bar"><label>Desde<input type="date" name="desde" value="@Model.Desde.ToString("yyyy-MM-dd")" required /></label><label>Hasta<input type="date" name="hasta" value="@Model.Hasta.ToString("yyyy-MM-dd")" required /></label><label>Bodega<select name="bodega"><option value="">Todas</option>@foreach(var b in Model.Bodegas){<option value="@b.BodegaId" selected="@(Model.Bodega==b.BodegaId)">@b.Nombre</option>}</select></label><button class="secondary-button">Consultar</button></form></section>
+@if(canSell){
+<div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+    <div class="metric-card"><span class="metric-label">Ventas</span><strong class="metric-number">@Model.Ventas.Count</strong></div>
+    <div class="metric-card"><span class="metric-label">Neto CLP</span><strong class="report-number">$@Model.Ventas.Sum(x=>x.Neto).ToString("N0",cl)</strong></div>
+    <div class="metric-card"><span class="metric-label">Impuestos CLP</span><strong class="report-number">$@Model.Ventas.Sum(x=>x.Impuesto).ToString("N0",cl)</strong></div>
+    <div class="metric-card"><span class="metric-label">Total CLP</span><strong class="report-number">$@Model.Ventas.Sum(x=>x.Total).ToString("N0",cl)</strong></div>
+</div>
+<section class="panel mb-6"><div class="actions"><h2>Ventas del período</h2><a class="ml-auto" asp-action="Ventas" asp-route-desde="@Model.Desde.ToString("yyyy-MM-dd")" asp-route-hasta="@Model.Hasta.ToString("yyyy-MM-dd")" asp-route-bodega="@Model.Bodega">Exportar Excel</a></div>
+<div class="table-scroll"><table class="data-table"><thead><tr><th>Documento</th><th>Fecha UTC</th><th>Cliente</th><th>Bodega</th><th>Total CLP</th></tr></thead><tbody>
+@foreach(var v in Model.Ventas.Take(200)){<tr><td><a asp-controller="Documentos" asp-action="Detalle" asp-route-id="@v.Id" asp-route-venta="true">@v.Numero</a></td><td>@v.Fecha.ToString("dd/MM/yyyy HH:mm")</td><td>@v.Cliente</td><td>@v.Bodega</td><td>@v.Total.ToString("N0",cl)</td></tr>}
+</tbody></table></div><p class="muted text-xs mt-3">Mostrando hasta 200 filas. Los totales y la exportación incluyen todo el período seleccionado.</p></section>
+}
+<section class="panel"><div class="actions"><h2>Movimientos de inventario</h2><a class="ml-auto" asp-action="Movimientos" asp-route-desde="@Model.Desde.ToString("yyyy-MM-dd")" asp-route-hasta="@Model.Hasta.ToString("yyyy-MM-dd")" asp-route-bodega="@Model.Bodega">Exportar Excel</a></div>
+<div class="table-scroll"><table class="data-table"><thead><tr><th>Fecha UTC</th><th>Bodega</th><th>Producto</th><th>Movimiento</th><th>Cantidad</th><th>Origen</th><th>Usuario</th></tr></thead><tbody>
+@foreach(var m in Model.Movimientos.Take(200)){<tr><td>@m.CreadoEn.ToString("dd/MM/yyyy HH:mm")</td><td>@m.Bodega</td><td>@m.SKU<small>@m.Producto</small></td><td>@m.Tipo</td><td>@m.Cantidad.ToString("0.###",cl)</td><td>@m.Origen</td><td>@m.Usuario</td></tr>}
+</tbody></table></div><p class="muted text-xs mt-3">@Model.Movimientos.Count movimientos encontrados. Mostrando hasta 200. Exportación: máximo 10000 filas.</p>
+</section>

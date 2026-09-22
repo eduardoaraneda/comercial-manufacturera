@@ -1,0 +1,19 @@
+@model ImportacionDetalle
+@{ ViewData["Title"] = "Revisar ingreso"; var h = Model.Cabecera; }
+<div class="page-heading"><div><p class="eyebrow">INGRESO IMP-@h.ImportacionInventarioId</p><h1>Revisar carga</h1><p class="muted">@h.Bodega · @h.NombreArchivo · @h.ReferenciaRecepcion</p></div><span class="state-tag">@h.Estado</span></div>
+@if(h.ArchivoRepetido){<div class="notice warning mb-6">Un archivo con el mismo contenido ya se aplicó en esta bodega. Comprueba que se trata de otra recepción antes de volver a ingresarlo.</div>}
+<section class="panel table-scroll"><table class="data-table"><thead><tr><th>Fila Excel</th><th>SKU</th><th>Cantidad</th><th>Validación</th></tr></thead><tbody>
+@foreach(var l in Model.Lineas){<tr><td>@l.NumeroFila</td><td>@l.SKUOriginal</td><td>@l.CantidadOriginal</td><td>@(l.ErrorValidacion ?? "Correcta")</td></tr>}
+</tbody></table></section>
+<section class="actions mt-6">
+@if(h.Estado=="Validada"){
+<form asp-action="Aplicar" method="post" data-confirm="Se sumarán las cantidades al stock de esta bodega. ¿Confirmar ingreso?" class="inline-form">
+    <input type="hidden" name="id" value="@h.ImportacionInventarioId" /><input type="hidden" name="version" value="@Convert.ToBase64String(h.Version)" />
+    @if(h.ArchivoRepetido){<label class="check-label"><input type="checkbox" name="confirmarDuplicado" value="true" required /> Corresponde a otra recepción</label>}
+    <button class="primary-button button-auto">Confirmar ingreso</button>
+</form>}
+@if(h.Estado is "Validada" or "ConErrores" or "Cargada"){
+<form asp-action="Cancelar" method="post"><input type="hidden" name="id" value="@h.ImportacionInventarioId" /><button class="secondary-button">Cancelar carga</button></form>}
+<a asp-action="Importaciones">Volver al historial</a>
+</section>
+@if(h.Estado=="ConErrores"){<p class="notice warning">Corrige el archivo y realiza una nueva carga. Ninguna fila de este ingreso modificó el inventario.</p>}

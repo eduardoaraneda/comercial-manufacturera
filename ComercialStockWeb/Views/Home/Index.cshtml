@@ -1,0 +1,39 @@
+@model HomeViewModel
+@{
+    ViewData["Title"] = "Inicio";
+    var nombre = User.FindFirst("NombreCompleto")?.Value ?? "Usuario";
+}
+<div class="page-heading">
+    <div><p class="eyebrow">VISTA GENERAL</p><h1>Hola, @nombre.</h1><p class="muted text-sm">Este es el punto de partida de tu operación comercial.</p></div>
+    <span class="status-badge @(Model.BaseDisponible ? "" : "offline")">@(Model.BaseDisponible ? "Datos actualizados" : "Datos no disponibles")</span>
+</div>
+@if (!Model.BaseDisponible)
+{
+    <div class="notice warning mb-6" role="alert">No pudimos consultar el resumen. Recarga la página en unos momentos.</div>
+}
+<div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-7">
+    <div class="metric-card"><span class="metric-label">Productos activos</span><strong class="metric-number">@(Model.Resumen?.Productos.ToString() ?? "—")</strong><span class="metric-note">Catálogo comercial</span></div>
+    <div class="metric-card"><span class="metric-label">Bodegas activas</span><strong class="metric-number">@(Model.Resumen?.Bodegas.ToString() ?? "—")</strong><span class="metric-note">Ubicaciones de inventario</span></div>
+    <div class="metric-card"><span class="metric-label">Cotizaciones</span><strong class="metric-number">@(Model.Resumen?.Cotizaciones.ToString() ?? "—")</strong><span class="metric-note">Total registrado</span></div>
+    <div class="metric-card"><span class="metric-label">Ventas</span><strong class="metric-number">@(Model.Resumen?.Ventas.ToString() ?? "—")</strong><span class="metric-note">Total registrado</span></div>
+</div>
+<div class="grid lg:grid-cols-3 gap-6">
+    <section class="panel lg:col-span-2">
+        <h2>Tu operación, conectada</h2>
+        <p class="muted text-sm">Gestiona el inventario y tus documentos desde un solo lugar.</p>
+        <div class="module-row"><span class="module-icon" aria-hidden="true">▧</span><div><h3><a asp-controller="Inventario" asp-action="Index">Existencias por bodega</a></h3><p>Consulta stock físico, reservado y disponible.</p></div></div>
+        @if(User.IsInRole("Administrador") || User.IsInRole("Bodeguero")){
+            <div class="module-row"><span class="module-icon" aria-hidden="true">⇧</span><div><h3><a asp-controller="Inventario" asp-action="Cargar">Ingreso de inventario</a></h3><p>Carga, revisa y confirma recepciones desde Excel.</p></div></div>
+        }
+        @if(User.IsInRole("Administrador") || User.IsInRole("Vendedor")){
+            <div class="module-row"><span class="module-icon" aria-hidden="true">▤</span><div><h3><a asp-controller="Documentos" asp-action="Cotizaciones">Cotizaciones con reserva</a></h3><p>Prepara propuestas y reserva stock al emitirlas.</p></div></div>
+            <div class="module-row"><span class="module-icon" aria-hidden="true">↗</span><div><h3><a asp-controller="Documentos" asp-action="Ventas">Ventas</a></h3><p>Confirma ventas directas o convierte tus cotizaciones.</p></div></div>
+        }
+    </section>
+    <aside class="panel note-panel">
+        <p class="eyebrow mb-4">INVENTARIO CON CLARIDAD</p>
+        <h2>Reservar no es descontar.</h2>
+        <p class="mt-4">Una cotización compromete unidades temporalmente. La venta confirmada registra su salida física.</p>
+        <div class="note-rule"><strong>Disponible</strong><br />Existencia física − Reservas vigentes</div>
+    </aside>
+</div>

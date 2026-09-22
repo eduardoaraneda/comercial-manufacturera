@@ -1,0 +1,33 @@
+@model DocumentoViewModel
+@{ var d = Model.Documento.Cabecera; ViewData["Title"] = d.Numero; var cl = CultureInfo.GetCultureInfo("es-CL"); }
+<div class="page-heading"><div><p class="eyebrow">@(Model.Venta ? "VENTA" : "COTIZACIÓN")</p><h1>@d.Numero</h1><span class="state-tag">@d.Estado</span></div><button type="button" class="secondary-button no-print" data-print>Imprimir / guardar PDF</button></div>
+<section class="panel">
+<div class="form-grid"><div><strong>@d.Cliente</strong><p class="muted">Bodega: @d.Bodega</p></div><div><p>Fecha: @d.Fecha.ToString("dd/MM/yyyy HH:mm") UTC</p>@if(d.VenceEn.HasValue){<p>Reserva hasta: @d.VenceEn.Value.ToString("dd/MM/yyyy HH:mm") UTC</p>}</div></div>
+<div class="table-scroll mt-6"><table class="data-table"><thead><tr><th>SKU / Producto</th><th>Cantidad</th><th>Precio neto</th><th>Descuento/un.</th><th>Impuesto %</th><th>Total CLP</th></tr></thead><tbody>
+@foreach(var l in Model.Documento.Lineas){<tr><td>@l.SKU<small>@l.DescripcionProducto</small></td><td>@l.Cantidad.ToString("0.###",cl)</td><td>@l.PrecioUnitario.ToString("N2",cl)</td><td>@l.DescuentoUnitario.ToString("N2",cl)</td><td>@((l.TasaImpuesto*100).ToString("0.####",cl))</td><td>@l.Total.ToString("N0",cl)</td></tr>}
+</tbody></table></div>
+<div class="totals"><span>Neto <strong>$@d.Neto.ToString("N0",cl)</strong></span><span>Impuesto <strong>$@d.Impuesto.ToString("N0",cl)</strong></span><span>Total CLP <strong>$@d.Total.ToString("N0",cl)</strong></span></div>
+@if(!string.IsNullOrWhiteSpace(d.Observaciones)){<p class="notice">@d.Observaciones</p>}
+<p class="muted text-xs mt-6">Documento comercial interno. No corresponde a una boleta ni factura electrónica del SII.</p>
+</section>
+@if(!Model.Venta){
+<section class="panel mt-6 no-print"><div class="actions">
+    <a asp-controller="Inventario" asp-action="Index" asp-route-bodega="@d.BodegaId">Consultar stock de esta bodega</a>
+    @if(User.IsInRole("Administrador") || User.IsInRole("Bodeguero")){
+        <a asp-controller="Inventario" asp-action="Cargar">Ingresar stock desde Excel</a>
+    }
+    @if(d.Estado == "Borrador"){
+        <a class="secondary-button" asp-action="Editar" asp-route-id="@d.Id">Editar borrador</a>
+        <form asp-action="Emitir" method="post" class="inline-form"><input type="hidden" name="id" value="@d.Id" /><input type="hidden" name="version" value="@Convert.ToBase64String(d.Version)" /><label>Reserva (horas)<input name="horas" type="number" min="1" max="720" value="@Model.HorasReserva" required /></label><button class="primary-button button-auto">Emitir y reservar</button></form>
+    }
+    @if(d.Estado is "Emitida" or "Vencida"){
+        <form asp-action="Convertir" method="post" data-confirm="Se confirmará una venta y se descontará inventario. ¿Continuar?"><input type="hidden" name="id" value="@d.Id" /><input type="hidden" name="clave" value="@Guid.NewGuid()" /><button class="primary-button button-auto">Convertir en venta</button></form>
+    }
+    @if(d.Estado is "Borrador" or "Emitida" or "Vencida"){
+        <form asp-action="Cancelar" method="post" data-confirm="Se cancelará la cotización y se liberarán sus reservas. ¿Continuar?"><input type="hidden" name="id" value="@d.Id" /><input type="hidden" name="version" value="@Convert.ToBase64String(d.Version)" /><button class="secondary-button">Cancelar cotización</button></form>
+    }
+    <a asp-action="Crear" asp-route-copiar="@d.Id">Copiar a un nuevo borrador</a>
+</div>
+@if(d.Estado == "Vencida"){<p class="notice warning">La reserva ya no está vigente. Al vender se comprobará nuevamente la disponibilidad.</p>}
+</section>
+}

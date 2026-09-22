@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="ComercialStockWeb/Web.csproj" />
+  <Project Path="Application/Application.csproj" />
+  <Project Path="Domain/Domain.csproj" />
+  <Project Path="Infrastructure/Infrastructure.csproj" />
+  <Folder Name="/Tests/">
+    <Project Path="Tests/ComercialStock.Tests/ComercialStock.Tests.csproj" />
+  </Folder>
+</Solution>

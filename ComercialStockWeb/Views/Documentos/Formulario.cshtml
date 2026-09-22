@@ -1,0 +1,32 @@
+@model DocumentoForm
+@{ ViewData["Title"] = Model.Venta ? "Nueva venta" : Model.Id > 0 ? "Editar cotización" : "Nueva cotización"; }
+<div class="page-heading"><div><p class="eyebrow">GESTIÓN COMERCIAL</p><h1>@ViewData["Title"]</h1><p class="muted">@(Model.Venta ? "Al confirmar se descuenta el stock disponible de la bodega." : "Primero guarda el borrador. Al emitirlo se reservará el stock.")</p></div></div>
+@if(Model.Clientes.Count == 0 || Model.Bodegas.Count == 0 || Model.Productos.Count == 0) {
+    <div class="notice warning">Necesitas al menos un cliente, una bodega y un producto activos. Revisa los catálogos antes de continuar.</div>
+}
+<form asp-action="@(Model.Id > 0 ? "Editar" : "Crear")" method="post" class="panel document-form" data-document-form>
+<div asp-validation-summary="All" role="alert"></div>
+<input type="hidden" asp-for="Id" /><input type="hidden" asp-for="Venta" />
+<input type="hidden" name="Version" value="@Convert.ToBase64String(Model.Version)" />
+<input type="hidden" asp-for="Documento.ClaveOperacion" /><input type="hidden" asp-for="Documento.HorasReserva" />
+<div class="form-grid">
+    <label>Cliente<select asp-for="Documento.ClienteId" required><option value="">Seleccionar cliente</option>@foreach(var c in Model.Clientes){<option value="@c.ClienteId">@c.NombreRazonSocial</option>}</select></label>
+    <label>Bodega<select asp-for="Documento.BodegaId" required><option value="">Seleccionar bodega</option>@foreach(var b in Model.Bodegas){<option value="@b.BodegaId">@b.Nombre</option>}</select></label>
+</div>
+<div class="table-scroll mt-6"><table class="data-table lines-table"><thead><tr><th>Producto</th><th>Cantidad</th><th>Precio neto CLP</th><th>Descuento/un.</th><th>Impuesto %</th><th></th></tr></thead><tbody data-lines>
+@for(var i = 0; i < Model.Documento.Lineas.Count; i++) {
+    <tr data-line>
+        <td><select asp-for="Documento.Lineas[i].ProductoId" data-product required aria-label="Producto"><option value="">Seleccionar</option>@foreach(var p in Model.Productos){<option value="@p.ProductoId" data-price="@p.PrecioReferencia.ToString(CultureInfo.InvariantCulture)">@p.SKU · @p.Nombre (@p.UnidadMedida)</option>}</select></td>
+        <td><input asp-for="Documento.Lineas[i].Cantidad" type="number" data-qty min="0.001" max="1000000" step="0.001" required aria-label="Cantidad" /></td>
+        <td><input asp-for="Documento.Lineas[i].PrecioUnitario" type="number" data-price min="0" max="1000000000" step="0.0001" required aria-label="Precio" /></td>
+        <td><input asp-for="Documento.Lineas[i].DescuentoUnitario" type="number" data-discount min="0" max="1000000000" step="0.0001" required aria-label="Descuento" /></td>
+        <td><input asp-for="Documento.Lineas[i].ImpuestoPorcentaje" type="number" data-tax min="0" max="100" step="0.0001" required aria-label="Impuesto" /></td>
+        <td><button type="button" class="text-button" data-remove-line aria-label="Quitar producto">Quitar</button></td>
+    </tr>
+}
+</tbody></table></div>
+<div class="actions mt-4"><button type="button" class="secondary-button" data-add-line>+ Agregar producto</button><a asp-controller="Inventario" asp-action="Index" target="_blank" rel="noopener">Consultar disponibilidad ↗</a><strong class="ml-auto" data-total>Total estimado: —</strong></div>
+<label class="block mt-6">Observaciones<textarea asp-for="Documento.Observaciones" maxlength="1000" rows="3"></textarea></label>
+<div class="actions mt-6"><button type="submit" class="primary-button button-auto">@(Model.Venta ? "Confirmar venta" : "Guardar borrador")</button><a asp-action="@(Model.Venta ? "Ventas" : "Cotizaciones")">Volver</a></div>
+<p class="muted text-xs mt-4">Precios netos por unidad. Neto e impuesto se redondean a pesos por línea; el servidor calcula el total definitivo.</p>
+</form>

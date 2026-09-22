@@ -1,0 +1,6 @@
+@model IReadOnlyList<ImportacionFila>
+@{ ViewData["Title"] = "Ingresos de inventario"; }
+<div class="page-heading"><div><p class="eyebrow">TRAZABILIDAD</p><h1>Ingresos de inventario</h1><p class="muted">Últimas 200 cargas. Cada archivo ingresa unidades a una bodega.</p></div><a asp-action="Cargar" class="primary-button button-auto">Nueva carga</a></div>
+<section class="panel table-scroll"><table class="data-table"><thead><tr><th>Ingreso</th><th>Fecha UTC</th><th>Bodega</th><th>Archivo</th><th>Referencia</th><th>Estado</th><th></th></tr></thead><tbody>
+@foreach(var i in Model){<tr><td>IMP-@i.ImportacionInventarioId</td><td>@i.CreadaEn.ToString("dd/MM/yyyy HH:mm")</td><td>@i.Bodega</td><td>@i.NombreArchivo</td><td>@i.ReferenciaRecepcion</td><td><span class="state-tag">@i.Estado</span></td><td><a asp-action="Revisar" asp-route-id="@i.ImportacionInventarioId">Revisar</a></td></tr>}
+</tbody></table>@if(Model.Count==0){<p class="empty-state">Todavía no se han cargado archivos.</p>}</section>

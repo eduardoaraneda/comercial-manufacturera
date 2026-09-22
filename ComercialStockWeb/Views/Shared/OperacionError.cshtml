@@ -1,0 +1,6 @@
+@{ ViewData["Title"] = "Operación no completada"; }
+<section class="panel">
+    <p class="eyebrow">REVISA LA OPERACIÓN</p><h1 class="text-2xl mt-3">No se pudo completar</h1>
+    <div class="notice warning" role="alert">@ViewData["Mensaje"]</div>
+    <div class="actions mt-6"><button type="button" class="secondary-button" data-back>Volver y revisar</button><a asp-controller="Home" asp-action="Index">Ir al inicio</a></div>
+</section>

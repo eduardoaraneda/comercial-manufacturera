@@ -1,0 +1,56 @@
+@model CatalogoViewModel
+@{ ViewData["Title"] = Model.Tipo; var editable = Model.Tipo != "Productos" || User.IsInRole("Administrador"); }
+<div class="page-heading"><div><p class="eyebrow">CATÁLOGOS</p><h1>@Model.Tipo</h1><p class="muted">Administra los datos que utilizan tus documentos.</p></div></div>
+<div class="workspace-grid">
+<section class="panel table-panel">
+    <input type="search" class="table-search" placeholder="Buscar en esta lista…" aria-label="Buscar registros" data-table-search />
+    <div class="table-scroll"><table class="data-table" data-search-table><thead><tr>
+        <th>@(Model.Tipo == "Clientes" ? "Identificación" : "Código")</th><th>Nombre</th><th>@(Model.Tipo == "Productos" ? "Precio CLP" : "Contacto / dirección")</th><th>Estado</th><th></th>
+    </tr></thead><tbody>
+    @if (Model.Tipo == "Productos") {
+        @foreach (var p in Model.Productos) { <tr><td>@p.SKU</td><td>@p.Nombre <small>@p.UnidadMedida</small></td><td>@p.PrecioReferencia.ToString("N0", CultureInfo.GetCultureInfo("es-CL"))</td><td>@(p.Activo ? "Activo" : "Inactivo")</td><td>@if(editable){<a asp-action="Productos" asp-route-id="@p.ProductoId">Editar</a>}</td></tr> }
+    } else if(Model.Tipo == "Clientes") {
+        @foreach (var c in Model.Clientes) { <tr><td>@c.IdentificadorFiscal</td><td>@c.NombreRazonSocial</td><td>@c.Email</td><td>@(c.Activo ? "Activo" : "Inactivo")</td><td><a asp-action="Clientes" asp-route-id="@c.ClienteId">Editar</a></td></tr> }
+    } else {
+        @foreach (var b in Model.Bodegas) { <tr><td>@b.Codigo</td><td>@b.Nombre</td><td>@b.Direccion</td><td>@(b.Activa ? "Activa" : "Inactiva")</td><td><a asp-action="Bodegas" asp-route-id="@b.BodegaId">Editar</a></td></tr> }
+    }
+    </tbody></table></div>
+    @if(Model.Productos.Count + Model.Clientes.Count + Model.Bodegas.Count == 0) { <p class="empty-state">Todavía no hay registros. Crea el primero con el formulario.</p> }
+</section>
+@if(editable) {
+<section class="panel"><h2>Crear o editar</h2><div asp-validation-summary="All" role="alert"></div>
+@if(Model.Tipo == "Productos") {
+    <form asp-action="GuardarProducto" method="post" class="stack-form">
+        <input type="hidden" asp-for="Producto.ProductoId" /><input type="hidden" name="Producto.Version" value="@Convert.ToBase64String(Model.Producto.Version)" />
+        <label>SKU<input asp-for="Producto.SKU" maxlength="50" required /></label>
+        <label>Nombre<input asp-for="Producto.Nombre" maxlength="200" required /></label>
+        <label>Descripción<textarea asp-for="Producto.Descripcion" maxlength="1000"></textarea></label>
+        <label>Unidad (UN, KG, MT)<input asp-for="Producto.UnidadMedida" maxlength="10" required /></label>
+        <label>Precio neto de referencia CLP<input asp-for="Producto.PrecioReferencia" type="number" min="0" max="1000000000" step="0.0001" required /></label>
+        <label class="check-label"><input asp-for="Producto.Activo" /> Activo</label>
+        <button class="primary-button">Guardar producto</button><a asp-action="Productos">Limpiar formulario</a>
+    </form>
+} else if(Model.Tipo == "Clientes") {
+    <form asp-action="GuardarCliente" method="post" class="stack-form">
+        <input type="hidden" asp-for="Cliente.ClienteId" /><input type="hidden" name="Cliente.Version" value="@Convert.ToBase64String(Model.Cliente.Version)" />
+        <label>Nombre o razón social<input asp-for="Cliente.NombreRazonSocial" maxlength="200" required /></label>
+        <label>Identificador fiscal / RUT<input asp-for="Cliente.IdentificadorFiscal" maxlength="30" /></label>
+        <label>Correo<input asp-for="Cliente.Email" type="email" maxlength="254" /></label>
+        <label>Teléfono<input asp-for="Cliente.Telefono" maxlength="30" /></label>
+        <label>Dirección<input asp-for="Cliente.Direccion" maxlength="300" /></label>
+        <label class="check-label"><input asp-for="Cliente.Activo" /> Activo</label>
+        <button class="primary-button">Guardar cliente</button><a asp-action="Clientes">Limpiar formulario</a>
+    </form>
+} else {
+    <form asp-action="GuardarBodega" method="post" class="stack-form">
+        <input type="hidden" asp-for="Bodega.BodegaId" /><input type="hidden" name="Bodega.Version" value="@Convert.ToBase64String(Model.Bodega.Version)" />
+        <label>Código<input asp-for="Bodega.Codigo" maxlength="20" required /></label>
+        <label>Nombre<input asp-for="Bodega.Nombre" maxlength="150" required /></label>
+        <label>Dirección<input asp-for="Bodega.Direccion" maxlength="300" /></label>
+        <label class="check-label"><input asp-for="Bodega.Activa" /> Activa</label>
+        <button class="primary-button">Guardar bodega</button><a asp-action="Bodegas">Limpiar formulario</a>
+    </form>
+}
+</section>
+}
+</div>

@@ -1,0 +1,44 @@
+@model LoginViewModel
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Iniciar sesión";
+}
+<p class="eyebrow">BIENVENIDO A TU ESPACIO DE TRABAJO</p>
+<h2>Inicia sesión</h2>
+<p class="muted text-sm">Ingresa con tu cuenta para continuar.</p>
+@if (Model.SesionExpirada)
+{
+    <div class="notice warning" role="status">Tu sesión venció o ya no está activa. Inicia sesión nuevamente para continuar.</div>
+}
+@if (TempData["Success"] is string success)
+{
+    <div class="notice" role="status">@success</div>
+}
+@if (!Model.BaseDisponible)
+{
+    <div class="notice warning" role="alert">El servicio de acceso no está disponible en este momento. Inténtalo más tarde.</div>
+}
+@if (Model.MostrarConfiguracion)
+{
+    <div class="notice">Es tu primer ingreso. <a asp-action="Configuracion">Crea tu cuenta de administrador</a> para comenzar.</div>
+}
+<div asp-validation-summary="ModelOnly" role="alert"></div>
+<form asp-controller="Login" asp-action="Index" method="post" class="auth-form" data-auth-form>
+    <input type="hidden" asp-for="ReturnUrl" />
+    <div class="field">
+        <label asp-for="Email">Correo electrónico</label>
+        <input asp-for="Email" type="email" autocomplete="username" placeholder="nombre@empresa.cl" required maxlength="254" />
+        <span asp-validation-for="Email"></span>
+    </div>
+    <div class="field">
+        <label asp-for="Password">Contraseña</label>
+        <div class="password-field">
+            <input asp-for="Password" type="password" autocomplete="current-password" placeholder="Tu contraseña" required maxlength="128" />
+            <button type="button" class="password-toggle" data-toggle-password="Password" aria-label="Mostrar contraseña" aria-pressed="false">Mostrar</button>
+        </div>
+        <span asp-validation-for="Password"></span>
+    </div>
+    <label class="remember"><input asp-for="Recordar" /> Mantener mi sesión en este equipo</label>
+    <button type="submit" class="primary-button" data-submit-label="Iniciar sesión">Iniciar sesión</button>
+</form>
+<p class="auth-footnote">Acceso exclusivo para usuarios autorizados.</p>

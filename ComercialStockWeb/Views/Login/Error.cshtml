@@ -1,0 +1,6 @@
+@{ Layout = "_AuthLayout"; ViewData["Title"] = "No pudimos completar la operación"; }
+<p class="eyebrow">ALGO NO SALIÓ BIEN</p>
+<h2>No pudimos completar la operación.</h2>
+<p class="muted">Inténtalo nuevamente. Si el problema continúa, comparte esta referencia con el administrador.</p>
+<p class="notice">Referencia: @ViewData["TraceId"]</p>
+<a asp-controller="Login" asp-action="Index" class="back-link">Volver al inicio de sesión</a>

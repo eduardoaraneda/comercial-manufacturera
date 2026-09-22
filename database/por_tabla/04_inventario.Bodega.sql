@@ -1,0 +1,23 @@
+-- Tabla: inventario.Bodega. Ejecutar despues de los archivos anteriores.
+USE [ComercialStock];
+GO
+SET ANSI_NULLS ON;
+SET QUOTED_IDENTIFIER ON;
+SET ANSI_PADDING ON;
+SET ANSI_WARNINGS ON;
+SET ARITHABORT ON;
+SET CONCAT_NULL_YIELDS_NULL ON;
+SET NUMERIC_ROUNDABORT OFF;
+GO
+CREATE TABLE inventario.Bodega (
+    BodegaId INT IDENTITY(1,1) NOT NULL,
+    Codigo NVARCHAR(20) NOT NULL,
+    Nombre NVARCHAR(150) NOT NULL,
+    Direccion NVARCHAR(300) NULL,
+    Activa BIT NOT NULL CONSTRAINT DF_Bodega_Activa DEFAULT (1),
+    CONSTRAINT PK_Bodega PRIMARY KEY (BodegaId),
+    CONSTRAINT UQ_Bodega_Codigo UNIQUE (Codigo),
+    CONSTRAINT CK_Bodega_Codigo CHECK (LEN(LTRIM(RTRIM(Codigo))) > 0),
+    CONSTRAINT CK_Bodega_Nombre CHECK (LEN(LTRIM(RTRIM(Nombre))) > 0)
+);
+GO

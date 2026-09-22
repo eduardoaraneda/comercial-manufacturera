@@ -1,0 +1,37 @@
+@model ConfiguracionViewModel
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Configuración inicial";
+}
+<p class="eyebrow">PRIMER PASO</p>
+<h2>Tu primera cuenta</h2>
+<p class="muted text-sm">Crea el administrador de Comercial Manufacturera LTDA. Esta configuración se realiza una sola vez.</p>
+<div asp-validation-summary="ModelOnly" role="alert"></div>
+<form asp-action="Configuracion" method="post" class="auth-form" data-auth-form>
+    <div class="field">
+        <label asp-for="Nombre">Nombre completo</label>
+        <input asp-for="Nombre" autocomplete="name" required maxlength="150" />
+        <span asp-validation-for="Nombre"></span>
+    </div>
+    <div class="field">
+        <label asp-for="Email">Correo electrónico</label>
+        <input asp-for="Email" type="email" autocomplete="username" required maxlength="254" />
+        <span asp-validation-for="Email"></span>
+    </div>
+    <div class="field">
+        <label asp-for="Password">Contraseña</label>
+        <div class="password-field">
+            <input asp-for="Password" type="password" autocomplete="new-password" required minlength="12" maxlength="128" aria-describedby="password-help" />
+            <button type="button" class="password-toggle" data-toggle-password="Password" aria-label="Mostrar contraseña" aria-pressed="false">Mostrar</button>
+        </div>
+        <span asp-validation-for="Password"></span>
+        <p class="muted text-xs mt-2" id="password-help">Al menos 12 caracteres, con mayúscula, minúscula, número y símbolo.</p>
+    </div>
+    <div class="field">
+        <label asp-for="ConfirmarPassword">Confirmar contraseña</label>
+        <input asp-for="ConfirmarPassword" type="password" autocomplete="new-password" required minlength="12" maxlength="128" />
+        <span asp-validation-for="ConfirmarPassword"></span>
+    </div>
+    <button type="submit" class="primary-button" data-submit-label="Crear administrador">Crear administrador</button>
+</form>
+<a asp-action="Index" class="back-link">← Volver al inicio de sesión</a>

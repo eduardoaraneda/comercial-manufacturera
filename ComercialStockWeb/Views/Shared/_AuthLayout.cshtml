@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] · Comercial Manufacturera LTDA.</title>
+    <link rel="stylesheet" href="~/dist/styles.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="auth-shell">
+        <aside class="auth-story" aria-label="Comercial Manufacturera LTDA.">
+            <a class="brand" asp-controller="Login" asp-action="Index"><span class="brand-mark" aria-hidden="true">cm</span><span class="brand-name">Comercial Manufacturera LTDA.</span></a>
+            <div class="story-content">
+                <p class="eyebrow">GESTIÓN COMERCIAL & INVENTARIO</p>
+                <h1>Cada venta.<br />Cada producto.<br /><span>Todo en su lugar.</span></h1>
+                <p class="story-copy">Un espacio para conectar tus cotizaciones, ventas y existencias por bodega.</p>
+                <div class="flow-card">
+                    <p class="eyebrow">UN PROCESO CONECTADO</p>
+                    <div class="flow-steps"><span>Cotiza</span><b aria-hidden="true">→</b><span>Reserva</span><b aria-hidden="true">→</b><span>Vende</span></div>
+                    <p class="flow-caption">Del primer acuerdo al movimiento de inventario.</p>
+                </div>
+            </div>
+            <p class="story-footer">Comercial Manufacturera LTDA. · Tu operación, con claridad.</p>
+        </aside>
+        <main class="auth-main"><div class="auth-card">@RenderBody()</div></main>
+    </div>
+    <script type="module" src="~/dist/login.js" asp-append-version="true"></script>
+</body>
+</html>

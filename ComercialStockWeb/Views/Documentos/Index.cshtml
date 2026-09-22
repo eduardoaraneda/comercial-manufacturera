@@ -1,0 +1,10 @@
+@model DocumentosViewModel
+@{ ViewData["Title"] = Model.Ventas ? "Ventas" : "Cotizaciones"; }
+<div class="page-heading"><div><p class="eyebrow">GESTIÓN COMERCIAL</p><h1>@ViewData["Title"]</h1><p class="muted">Últimos 200 documentos. Los importes se expresan en CLP.</p></div><a class="primary-button button-auto" asp-action="Crear" asp-route-venta="@Model.Ventas">@(Model.Ventas ? "Nueva venta" : "Nueva cotización")</a></div>
+<section class="panel">
+<form method="get" class="filter-bar"><label>Buscar<input name="buscar" value="@Model.Buscar" placeholder="Número o cliente" maxlength="200" /></label><button class="secondary-button">Buscar</button></form>
+<div class="table-scroll"><table class="data-table"><thead><tr><th>Número</th><th>Fecha UTC</th><th>Cliente</th><th>Bodega</th><th>Estado</th><th>Total</th><th></th></tr></thead><tbody>
+@foreach(var d in Model.Documentos) { <tr><td>@d.Numero</td><td>@d.Fecha.ToString("dd/MM/yyyy HH:mm")</td><td>@d.Cliente</td><td>@d.Bodega</td><td><span class="state-tag">@d.Estado</span></td><td>@d.Total.ToString("N0", CultureInfo.GetCultureInfo("es-CL"))</td><td><a asp-action="Detalle" asp-route-id="@d.Id" asp-route-venta="@Model.Ventas">Ver</a></td></tr> }
+</tbody></table></div>
+@if(Model.Documentos.Count == 0) { <p class="empty-state">No hay documentos para esta búsqueda.</p> }
+</section>

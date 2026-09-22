@@ -1,0 +1,23 @@
+-- Tabla: seguridad.Usuario. Ejecutar despues de los archivos anteriores.
+USE [ComercialStock];
+GO
+SET ANSI_NULLS ON;
+SET QUOTED_IDENTIFIER ON;
+SET ANSI_PADDING ON;
+SET ANSI_WARNINGS ON;
+SET ARITHABORT ON;
+SET CONCAT_NULL_YIELDS_NULL ON;
+SET NUMERIC_ROUNDABORT OFF;
+GO
+CREATE TABLE seguridad.Usuario (
+    UsuarioId INT IDENTITY(1,1) NOT NULL,
+    IdentidadId NVARCHAR(450) NOT NULL,
+    Nombre NVARCHAR(150) NOT NULL,
+    Activo BIT NOT NULL CONSTRAINT DF_Usuario_Activo DEFAULT (1),
+    CreadoEn DATETIME2(3) NOT NULL CONSTRAINT DF_Usuario_CreadoEn DEFAULT (SYSUTCDATETIME()),
+    CONSTRAINT PK_Usuario PRIMARY KEY (UsuarioId),
+    CONSTRAINT UQ_Usuario_IdentidadId UNIQUE (IdentidadId),
+    CONSTRAINT CK_Usuario_Nombre CHECK (LEN(LTRIM(RTRIM(Nombre))) > 0),
+    CONSTRAINT CK_Usuario_Identidad CHECK (LEN(LTRIM(RTRIM(IdentidadId))) > 0)
+);
+GO

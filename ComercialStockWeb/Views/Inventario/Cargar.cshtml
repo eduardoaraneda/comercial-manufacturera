@@ -1,0 +1,12 @@
+@model CargaInventarioForm
+@{ ViewData["Title"] = "Cargar inventario"; }
+<div class="page-heading"><div><p class="eyebrow">INGRESO POR BODEGA</p><h1>Cargar inventario</h1><p class="muted">Primero revisa las filas. El stock cambia solamente al confirmar la carga.</p></div><a asp-action="Plantilla" class="secondary-button">Descargar plantilla XLSX</a></div>
+<section class="panel"><div asp-validation-summary="All" role="alert"></div>
+<form asp-action="Cargar" method="post" enctype="multipart/form-data" class="stack-form max-w-xl">
+    <input type="hidden" asp-for="ClaveOperacion" />
+    <label>Bodega destino<select asp-for="BodegaId" required><option value="">Seleccionar</option>@foreach(var b in Model.Bodegas){<option value="@b.BodegaId">@b.Nombre</option>}</select></label>
+    <label>Referencia de recepción<input asp-for="ReferenciaRecepcion" maxlength="100" placeholder="Ej. recepción 001 o guía del proveedor" /></label>
+    <label>Archivo Excel<input asp-for="Archivo" type="file" accept=".xlsx" required /></label>
+    <p class="muted text-sm">Una hoja con columnas <strong>SKU</strong> y <strong>Cantidad</strong>. Hasta 1000 filas y 5 MB. Cantidades positivas, hasta tres decimales, sin fórmulas ni productos repetidos. Reemplaza la fila de ejemplo por los datos de tu recepción.</p>
+    <button class="primary-button button-auto">Cargar y validar</button>
+</form></section>

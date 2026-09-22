@@ -1,0 +1,57 @@
+@{
+    var nombre = User.FindFirst("NombreCompleto")?.Value ?? User.Identity?.Name ?? "Usuario";
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var comercial = User.IsInRole("Administrador") || User.IsInRole("Vendedor");
+    var bodega = User.IsInRole("Administrador") || User.IsInRole("Bodeguero");
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] · Comercial Manufacturera LTDA.</title>
+    <link rel="stylesheet" href="~/dist/styles.css" asp-append-version="true" />
+</head>
+<body data-session-url="@Url.Action("Estado", "Sesion")" data-login-url="@Url.Action("Index", "Login")">
+    <div class="app-shell">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" asp-controller="Home" asp-action="Index"><span class="brand-mark" aria-hidden="true">cm</span><span class="brand-name">Comercial Manufacturera LTDA.</span></a>
+            <nav aria-label="Navegación principal">
+                <p class="nav-heading">Espacio de trabajo</p>
+                <a class="nav-item @(controller=="Home" ? "active" : "")" asp-controller="Home" asp-action="Index"><span class="nav-symbol" aria-hidden="true">▦</span> Inicio</a>
+                <p class="nav-heading mt-8">Operación</p>
+                @if(comercial){
+                    <a class="nav-item" asp-controller="Documentos" asp-action="Cotizaciones"><span class="nav-symbol" aria-hidden="true">▤</span> Cotizaciones</a>
+                    <a class="nav-item" asp-controller="Documentos" asp-action="Ventas"><span class="nav-symbol" aria-hidden="true">↗</span> Ventas</a>
+                }
+                <a class="nav-item" asp-controller="Inventario" asp-action="Index"><span class="nav-symbol" aria-hidden="true">▧</span> Inventario</a>
+                @if(bodega){<a class="nav-item" asp-controller="Inventario" asp-action="Importaciones"><span class="nav-symbol" aria-hidden="true">⇧</span> Ingresos Excel</a>}
+                <a class="nav-item" asp-controller="Reportes" asp-action="Index"><span class="nav-symbol" aria-hidden="true">▥</span> Reportes</a>
+                <p class="nav-heading mt-8">Catálogos</p>
+                <a class="nav-item" asp-controller="Catalogos" asp-action="Productos">Productos</a>
+                @if(comercial){<a class="nav-item" asp-controller="Catalogos" asp-action="Clientes">Clientes</a>}
+                @if(bodega){<a class="nav-item" asp-controller="Catalogos" asp-action="Bodegas">Bodegas</a>}
+            </nav>
+            <div class="sidebar-footer">Gestión comercial e inventario<br /><span class="text-xs">Operación interna · 1.0</span></div>
+        </aside>
+        <div>
+            <header class="topbar">
+                <button class="menu-toggle" type="button" data-menu-toggle aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menú">☰</button>
+                <span class="topbar-title">Mi espacio / <strong>@ViewData["Title"]</strong></span>
+                <div class="account">
+                    <span class="avatar" aria-hidden="true">@nombre[..1].ToUpperInvariant()</span>
+                    <div><div class="account-name">@nombre</div>
+                        <form asp-controller="Login" asp-action="Logout" method="post"><button class="text-button" type="submit">Cerrar sesión</button></form>
+                    </div>
+                </div>
+            </header>
+            <main class="main-content">
+                @if(TempData["Error"] is string error){<div class="notice warning mb-6 no-print" role="alert">@error</div>}
+                @if(TempData["Success"] is string success){<div class="notice mb-6 no-print" role="status">@success</div>}
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+    <script type="module" src="~/dist/site.js" asp-append-version="true"></script>
+</body>
+</html>
