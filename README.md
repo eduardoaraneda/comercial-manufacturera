@@ -1,6 +1,27 @@
 # Comercial Manufacturera LTDA.
 
-Base del sistema de cotizaciones, reservas temporales, ventas e inventario por bodega.
+Sistema de gestión comercial para una empresa manufacturera: cotizaciones con
+reserva temporal de stock, ventas e inventario por bodega. Proyecto de portafolio
+con datos ficticios.
+
+**[Ver demostración en línea](https://portafolio.somee.com)** ·
+**[Explorar el código](https://github.com/eduardoaraneda/comercial-manufacturera)**
+
+La demostración está alojada en Somee y requiere una cuenta autorizada.
+Las credenciales de administración no se publican en este repositorio.
+
+## Funcionalidades y decisiones de diseño
+
+- Cotizaciones con reservas de stock que vencen y conversión a venta.
+- Ventas e inventario actualizados dentro de transacciones, con controles de
+  concurrencia e idempotencia para evitar sobreventas y operaciones duplicadas.
+- Ingreso de inventario desde Excel con revisión previa y movimientos trazables.
+- Catálogos de productos, clientes y bodegas, más reportes de la operación.
+- Autenticación con ASP.NET Core Identity, permisos por rol y sesiones con vencimiento.
+- Arquitectura por capas: Domain, Application, Infrastructure y presentación MVC.
+
+## Tecnologías
+
 Creada a partir de la organizacion de TheLine2: cuatro proyectos, ASP.NET Core MVC,
 vistas Razor y frontend TypeScript compilado con Vite. Usa .NET 10, EF Core,
 SQL Server, ASP.NET Core Identity y Tailwind CSS.
